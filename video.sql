@@ -310,11 +310,14 @@ CREATE TABLE `v_comment` (
   `timestamp` datetime(6) NOT NULL,
   `user_id` int(1) NOT NULL,
   `video_id` int(11) NOT NULL,
+  `parent_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `v_comment_user_id_58e38472_fk_v_user_id` (`user_id`),
   KEY `v_comment_video_id_9258a191_fk_v_video_id` (`video_id`),
+  KEY `v_comment_parent_id_38e38472_fk_v_comment_id` (`parent_id`),
   CONSTRAINT `v_comment_user_id_58e38472_fk_v_user_id` FOREIGN KEY (`user_id`) REFERENCES `v_user` (`id`),
-  CONSTRAINT `v_comment_video_id_9258a191_fk_v_video_id` FOREIGN KEY (`video_id`) REFERENCES `v_video` (`id`)
+  CONSTRAINT `v_comment_video_id_9258a191_fk_v_video_id` FOREIGN KEY (`video_id`) REFERENCES `v_video` (`id`),
+  CONSTRAINT `v_comment_parent_id_38e38472_fk_v_comment_id` FOREIGN KEY (`parent_id`) REFERENCES `v_comment` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

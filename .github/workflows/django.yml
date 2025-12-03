@@ -20,8 +20,8 @@ jobs:
         image: mysql:5.7
         env:
           MYSQL_DATABASE: video
-          MYSQL_PASSWORD: 4643830
-          MYSQL_ROOT_PASSWORD: 4643830
+          MYSQL_PASSWORD: 541882
+          MYSQL_ROOT_PASSWORD: 541882
         ports:
           - 3306:3306
         # This can be used to ensure MySQL is ready for accepting connections
@@ -43,7 +43,7 @@ jobs:
         pip install -r requirements.txt
     - name: Run migrations
       env:
-        DATABASE_URL: mysql://root:4643830@localhost/video
+        DATABASE_URL: mysql://root:541882@localhost/video
       run: |
         python manage.py migrate
         
