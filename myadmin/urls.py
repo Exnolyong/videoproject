@@ -31,10 +31,6 @@ urlpatterns = [
     path('comment_list/', views.CommentListView.as_view(), name='comment_list'),
     path('comment_delete/', views.comment_delete, name='comment_delete'),
 
-    #----------------------弹幕管理----------------------------
-    path('danmaku_list/', views.DanmakuListView.as_view(), name='danmaku_list'),
-    path('danmaku_delete/', views.danmaku_delete, name='danmaku_delete'),
-
     #----------------------用户管理-------------------------
     path('user_add/', views.UserAddView.as_view(), name='user_add'),
     path('user_list/', views.UserListView.as_view(), name='user_list'),

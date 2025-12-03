@@ -34,9 +34,6 @@ $(function(){
     if(pathname.endsWith("myadmin/comment_list/")) {
         $("#comment_list").addClass("active");
     }
-    if(pathname.endsWith("myadmin/danmaku_list/")) {
-        $("#danmaku_list").addClass("active");
-    }
     if(pathname.indexOf("myadmin/setting/") >= 0) {
         $("#setting").addClass("active");
     }
