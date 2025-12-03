@@ -22,7 +22,20 @@ class Comment(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     content = models.CharField(max_length=100)
     timestamp = models.DateTimeField(auto_now_add=True)
+    parent_comment = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
     objects = CommentQuerySet.as_manager()
 
     class Meta:
         db_table = "v_comment"
+
+
+class Danmaku(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    nickname = models.CharField(max_length=30, blank=True, null=True)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    content = models.CharField(max_length=50)  # 弹幕内容较短
+    timestamp = models.DateTimeField(auto_now_add=True)
+    play_time = models.FloatField()  # 弹幕出现的视频时间点（秒）
+
+    class Meta:
+        db_table = "v_danmaku"
