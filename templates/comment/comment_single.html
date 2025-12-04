@@ -3,15 +3,15 @@
 {% load thumbnail %}
 
 {% for item in comments %}
-    <div class="comment" comment-id="{{ item.id }}">
-        <a class="avatar">
 
+    <div class="comment" comment-id="{{ item.id }}">
+
+        <a class="avatar">
             {% thumbnail item.avatar "200x200" crop="center" as im %}
             <img class="ui avatar image" src="{{ im.url }}">
             {% empty %}
             <img class="ui avatar image" src="{% static 'img/img_default_avatar.png' %}">
             {% endthumbnail %}
-
         </a>
         <div class="content">
             <a class="author">
@@ -24,7 +24,35 @@
                 {{ item.content }}
             </div>
             <div class="actions">
+
                 <a class="reply-button" data-reply-to="{{ item.nickname }}" data-reply-to-id="{{ item.user_id }}">回复</a>
+
+                <a class="reply-btn" comment-id="{{ item.id }}">回复</a>
+            </div>
+            
+            <!-- 回复表单 -->
+            <div class="reply-form-container" style="display: none; margin-top: 10px;">
+                {% if user.is_authenticated %}
+                <form class="ui reply form" reply-to="{{ item.id }}">
+                    {% csrf_token %}
+                    <div class="field">
+                        <textarea placeholder="写下你的回复..." rows="2"></textarea>
+                    </div>
+                    <button class="ui small primary button" type="submit">发送回复</button>
+                    <button class="ui small button cancel-reply-btn">取消</button>
+                </form>
+                {% else %}
+                <div class="ui ignored info attached message">
+                    <p>登录后即可回复 &nbsp;&nbsp;&nbsp;<a href="{% url 'users:login' %}?next={{ request.path }}">马上登录</a></p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- 回复列表 -->
+            <div class="replies-container" style="margin-top: 10px;">
+                <div class="replies-list" comment-id="{{ item.id }}"></div>
+                <a class="show-replies-btn" comment-id="{{ item.id }}" style="display: none; margin-top: 5px;">查看更多回复</a>
+
             </div>
         </div>
     </div>

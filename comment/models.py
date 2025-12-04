@@ -22,10 +22,12 @@ class Comment(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     content = models.CharField(max_length=100)
     timestamp = models.DateTimeField(auto_now_add=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='replies', default=None)
     objects = CommentQuerySet.as_manager()
 
     class Meta:
         db_table = "v_comment"
+        ordering = ['timestamp']
 
 class DanmakuQuerySet(models.query.QuerySet):
 
@@ -36,12 +38,22 @@ class DanmakuQuerySet(models.query.QuerySet):
         return self.exclude(timestamp__lt=datetime.date.today()).count()
 
 class Danmaku(models.Model):
+
     list_display = ("content","timestamp",)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     nickname = models.CharField(max_length=30,blank=True, null=True)
     avatar = models.CharField(max_length=100,blank=True, null=True)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     content = models.CharField(max_length=100)
+
+    list_display = ("content","video_time","timestamp",)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    nickname = models.CharField(max_length=30,blank=True, null=True)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    content = models.CharField(max_length=100)
+    video_time = models.FloatField(default=0.0)  # 弹幕在视频中的显示时间（秒）
+    position = models.IntegerField(default=0)  # 弹幕位置：0-顶部，1-中部，2-底部
+    color = models.CharField(max_length=7, default='#FFFFFF')  # 弹幕颜色
     timestamp = models.DateTimeField(auto_now_add=True)
     objects = DanmakuQuerySet.as_manager()
 
@@ -70,3 +82,5 @@ class Reply(models.Model):
 
     class Meta:
         db_table = "v_reply"
+        db_table = "v_danmaku"
+

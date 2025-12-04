@@ -36,8 +36,12 @@
                 <a class="item" href="{% url 'myadmin:user_add' %}" id="user_add">添加用户</a>
                 <div class="ui divider"></div>
                 <a class="item" href="{% url 'myadmin:comment_list' %}" id="comment_list">评论列表</a>
+
                 <a class="item" href="{% url 'myadmin:danmaku_list' %}" id="danmaku_list">弹幕管理</a>
                 <a class="item" href="{% url 'myadmin:reply_list' %}" id="reply_list">楼中楼评论管理</a>
+
+                <a class="item" href="{% url 'myadmin:danmaku_list' %}" id="danmaku_list">弹幕列表</a>
+
                 <div class="ui divider"></div>
                 <a class="item" href="{% url 'myadmin:subscribe'  %}" id="subscribe">订阅通知</a>
                 <a class="item" href="{% url 'myadmin:feedback_list'  %}" id="feedback_list">用户反馈</a>
