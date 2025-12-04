@@ -8,11 +8,42 @@
 {% block content %}
 <div class="ui unstackable two column grid">
     <div class=" ten wide column">
-        <video class="video" autoplay="autoplay" controls="controls" controlslist="nodownload"
-               disablePictureInPicture>
-            <source src="{{video.file.url}}" type="video/mp4">
-<!--            <source src="https://www.runoob.com/try/demo_source/movie.mp4" type="video/mp4">-->
-        </video>
+        <div class="video-container">
+            <div class="danmaku-container" id="danmaku-container"></div>
+            <video class="video" autoplay="autoplay" controls="controls" controlslist="nodownload"
+                   disablePictureInPicture id="video-player">
+                <source src="{{video.file.url}}" type="video/mp4">
+            </video>
+            <!-- 弹幕发送表单 -->
+            {% if user.is_authenticated %}
+            <div class="danmaku-form-container">
+                <div class="ui form">
+                    <div class="inline fields">
+                        <div class="eight wide field">
+                            <input type="text" id="danmaku-content" placeholder="发送弹幕..." maxlength="100">
+                        </div>
+                        <div class="three wide field">
+                            <select id="danmaku-position">
+                                <option value="0">顶部</option>
+                                <option value="1" selected>中部</option>
+                                <option value="2">底部</option>
+                            </select>
+                        </div>
+                        <div class="three wide field">
+                            <input type="color" id="danmaku-color" value="#FFFFFF" style="width: 100%; height: 38px;">
+                        </div>
+                        <div class="two wide field">
+                            <button class="ui primary button" id="send-danmaku">发送</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="ui ignored info attached message">
+                <p>登录后即可发送弹幕 &nbsp;&nbsp;&nbsp;<a href="{% url 'users:login' %}?next={{ request.path }}">马上登录</a></p>
+            </div>
+            {% endif %}
+        </div>
         <div class="video-info">
             <div class="video-title">{{ video.title }}</div>
             <div class="video-view-count">{{ video.view_count }}次观看</div>
@@ -70,10 +101,15 @@
 <script>
 var comments_url = "{% url 'comment:get_comments' %}"
 var video_id = {{ video.id }}
+var submit_danmaku_url = "{% url 'comment:submit_danmaku' video.id %}"
+var get_danmakus_url = "{% url 'comment:get_danmakus' %}"
+var submit_reply_url = "{% url 'comment:submit_reply' 0 %}"
+var get_replies_url = "{% url 'comment:get_replies' %}"
 </script>
 
 <script src="{% static 'js/dropload.js' %}"></script>
 <script src="{% static 'js/load_comments.js' %}"></script>
 <script src="{% static 'js/detail.js' %}"></script>
+<script src="{% static 'js/danmaku.js' %}"></script>
 {% endblock javascript %}
  
