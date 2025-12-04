@@ -30,6 +30,10 @@ urlpatterns = [
     #----------------------评论管理----------------------------
     path('comment_list/', views.CommentListView.as_view(), name='comment_list'),
     path('comment_delete/', views.comment_delete, name='comment_delete'),
+    path('danmaku_list/', views.DanmakuListView.as_view(), name='danmaku_list'),
+    path('danmaku_delete/', views.danmaku_delete, name='danmaku_delete'),
+    path('reply_list/', views.ReplyListView.as_view(), name='reply_list'),
+    path('reply_delete/', views.reply_delete, name='reply_delete'),
 
     #----------------------弹幕管理----------------------------
     path('danmaku_list/', views.DanmakuListView.as_view(), name='danmaku_list'),

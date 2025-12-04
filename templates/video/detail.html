@@ -3,11 +3,71 @@
 {% load video_tag %}
 {% block css %}
 <link rel="stylesheet" href="{% static 'css/dropload.css' %}">
+<style>
+    .danmaku-container {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        overflow: hidden;
+        background-color: #000;
+    }
+    .danmaku {
+        position: absolute;
+        color: #fff;
+        font-size: 14px;
+        white-space: nowrap;
+        z-index: 10;
+        animation: scroll 10s linear infinite;
+    }
+    @keyframes scroll {
+        from { right: -100%; }
+        to { right: 100%; }
+    }
+    .danmaku-input {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        z-index: 20;
+    }
+    .reply-form {
+        margin-top: 10px;
+        display: none;
+    }
+    .reply-list {
+        margin-left: 40px;
+        margin-top: 10px;
+    }
+</style>
 {% endblock css %}
 
 {% block content %}
 <div class="ui unstackable two column grid">
     <div class=" ten wide column">
+
+        <div class="danmaku-container">
+            <video class="video" autoplay="autoplay" controls="controls" controlslist="nodownload" disablePictureInPicture style="width: 100%; height: 100%;">
+                <source src="{{ video.file.url }}" type="video/mp4">
+            </video>
+            <div id="danmaku_list"></div>
+            <div class="danmaku-input">
+                {% if user.is_authenticated %}
+                <form class="ui form" id="danmaku_form" method="post" action="{% url 'comment:submit_danmaku' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="video_id" value="{{ video.id }}">
+                    <div class="field">
+                        <input type="text" name="content" placeholder="输入弹幕内容..." id="danmaku_content">
+                    </div>
+                    <button class="ui primary button" type="submit">发送弹幕</button>
+                </form>
+                {% else %}
+                <div class="ui info message">
+                    <p>登录后即可发送弹幕 &nbsp;&nbsp;&nbsp;<a href="{% url 'users:login' %}?next={{ request.path }}">马上登录</a></p>
+                </div>
+                {% endif %}
+            </div>
+
         <div class="video-container">
             <div class="danmaku-container" id="danmaku-container"></div>
             <video class="video" autoplay="autoplay" controls="controls" controlslist="nodownload"
@@ -101,9 +161,15 @@
 <script>
 var comments_url = "{% url 'comment:get_comments' %}"
 var video_id = {{ video.id }}
+
+var danmakus_url = "{% url 'comment:get_danmakus' %}"
+var submit_reply_url = "{% url 'comment:submit_reply' %}"
+var submit_danmaku_url = "{% url 'comment:submit_danmaku' %}"
+
 var submit_danmaku_url = "{% url 'comment:submit_danmaku' video.id %}"
 var get_danmakus_url = "{% url 'comment:get_danmakus' %}"
 var submit_reply_url = "{% url 'comment:submit_reply' 0 %}"
+
 var get_replies_url = "{% url 'comment:get_replies' %}"
 </script>
 
@@ -111,5 +177,8 @@ var get_replies_url = "{% url 'comment:get_replies' %}"
 <script src="{% static 'js/load_comments.js' %}"></script>
 <script src="{% static 'js/detail.js' %}"></script>
 <script src="{% static 'js/danmaku.js' %}"></script>
+
+<script src="{% static 'js/reply.js' %}"></script>
+
 {% endblock javascript %}
  

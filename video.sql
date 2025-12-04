@@ -542,6 +542,74 @@ LOCK TABLES `v_video_liked` WRITE;
 INSERT INTO `v_video_liked` VALUES (1,1,1),(36,1,30),(35,5,30),(33,5,46),(44,5,52),(4,6,1),(2,7,1),(6,7,3),(45,7,52),(3,8,1),(26,8,30),(43,8,52),(9,10,20),(10,11,18),(11,11,27),(47,11,30),(13,12,1),(16,12,32),(48,12,55),(12,13,1),(15,13,31),(18,13,35),(32,13,36),(23,13,39),(34,13,47);
 /*!40000 ALTER TABLE `v_video_liked` ENABLE KEYS */;
 UNLOCK TABLES;
+--
+-- Table structure for table `v_danmaku`
+--
+
+DROP TABLE IF EXISTS `v_danmaku`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `v_danmaku` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nickname` varchar(30) DEFAULT NULL,
+  `avatar` varchar(100) DEFAULT NULL,
+  `content` varchar(200) NOT NULL,
+  `timestamp` datetime(6) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `video_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `v_danmaku_user_id_58e38472_fk_v_user_id` (`user_id`),
+  KEY `v_danmaku_video_id_9258a191_fk_v_video_id` (`video_id`),
+  CONSTRAINT `v_danmaku_user_id_58e38472_fk_v_user_id` FOREIGN KEY (`user_id`) REFERENCES `v_user` (`id`),
+  CONSTRAINT `v_danmaku_video_id_9258a191_fk_v_video_id` FOREIGN KEY (`video_id`) REFERENCES `v_video` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `v_danmaku`
+--
+
+LOCK TABLES `v_danmaku` WRITE;
+/*!40000 ALTER TABLE `v_danmaku` DISABLE KEYS */;
+/*!40000 ALTER TABLE `v_danmaku` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `v_reply`
+--
+
+DROP TABLE IF EXISTS `v_reply`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `v_reply` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nickname` varchar(30) DEFAULT NULL,
+  `avatar` varchar(100) DEFAULT NULL,
+  `content` varchar(200) NOT NULL,
+  `timestamp` datetime(6) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `comment_id` int(11) NOT NULL,
+  `reply_to_id` int(11) DEFAULT NULL,
+  `reply_to_nickname` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `v_reply_user_id_58e38472_fk_v_user_id` (`user_id`),
+  KEY `v_reply_comment_id_9258a191_fk_v_comment_id` (`comment_id`),
+  KEY `v_reply_reply_to_id_58e38472_fk_v_user_id` (`reply_to_id`),
+  CONSTRAINT `v_reply_user_id_58e38472_fk_v_user_id` FOREIGN KEY (`user_id`) REFERENCES `v_user` (`id`),
+  CONSTRAINT `v_reply_comment_id_9258a191_fk_v_comment_id` FOREIGN KEY (`comment_id`) REFERENCES `v_comment` (`id`),
+  CONSTRAINT `v_reply_reply_to_id_58e38472_fk_v_user_id` FOREIGN KEY (`reply_to_id`) REFERENCES `v_user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `v_reply`
+--
+
+LOCK TABLES `v_reply` WRITE;
+/*!40000 ALTER TABLE `v_reply` DISABLE KEYS */;
+/*!40000 ALTER TABLE `v_reply` ENABLE KEYS */;
+UNLOCK TABLES;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

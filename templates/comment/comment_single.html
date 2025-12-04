@@ -3,7 +3,9 @@
 {% load thumbnail %}
 
 {% for item in comments %}
-    <div class="comment" id="comment-{{ item.id }}">
+
+    <div class="comment" comment-id="{{ item.id }}">
+
         <a class="avatar">
             {% thumbnail item.avatar "200x200" crop="center" as im %}
             <img class="ui avatar image" src="{{ im.url }}">
@@ -22,6 +24,9 @@
                 {{ item.content }}
             </div>
             <div class="actions">
+
+                <a class="reply-button" data-reply-to="{{ item.nickname }}" data-reply-to-id="{{ item.user_id }}">回复</a>
+
                 <a class="reply-btn" comment-id="{{ item.id }}">回复</a>
             </div>
             
@@ -47,6 +52,7 @@
             <div class="replies-container" style="margin-top: 10px;">
                 <div class="replies-list" comment-id="{{ item.id }}"></div>
                 <a class="show-replies-btn" comment-id="{{ item.id }}" style="display: none; margin-top: 5px;">查看更多回复</a>
+
             </div>
         </div>
     </div>
