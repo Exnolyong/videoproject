@@ -3,7 +3,7 @@
 {% load thumbnail %}
 
 {% for item in comments %}
-    <div class="comment">
+    <div class="comment" comment-id="{{ item.id }}">
         <a class="avatar">
 
             {% thumbnail item.avatar "200x200" crop="center" as im %}
@@ -22,6 +22,9 @@
             </div>
             <div class="text">
                 {{ item.content }}
+            </div>
+            <div class="actions">
+                <a class="reply-button" data-reply-to="{{ item.nickname }}" data-reply-to-id="{{ item.user_id }}">回复</a>
             </div>
         </div>
     </div>

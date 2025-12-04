@@ -1,0 +1,123 @@
+{% extends 'myadmin/base.html' %}
+{% load static %}
+{% load video_tag %}
+
+{% block content %}
+    <div class="ui container">
+        <div class="ui segment">
+            <div class="ui grid">
+                <div class="row">
+                    <div class="column">
+                        <h3>楼中楼评论管理</h3>
+                        <div class="ui divider"></div>
+                        <div class="ui form">
+                            <div class="field">
+                                <div class="ui action input">
+                                    <input type="text" placeholder="搜索评论内容..." id="search_input">
+                                    <button class="ui button" id="search_button">搜索</button>
+                                </div>
+                            </div>
+                        </div>
+                        <table class="ui table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>用户</th>
+                                    <th>评论</th>
+                                    <th>回复目标</th>
+                                    <th>内容</th>
+                                    <th>时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reply in reply_list %}
+                                    <tr>
+                                        <td>{{ reply.id }}</td>
+                                        <td>{{ reply.user.nickname }}</td>
+                                        <td>{{ reply.comment.content|truncatechars:20 }}</td>
+                                        <td>{{ reply.reply_to.nickname|default:"无" }}</td>
+                                        <td>{{ reply.content }}</td>
+                                        <td>{{ reply.timestamp|time_since }}</td>
+                                        <td>
+                                            <button class="ui red button delete-reply" data-id="{{ reply.id }}">删除</button>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="center aligned">暂无楼中楼评论</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% if is_paginated %}
+                            <div class="ui pagination menu">
+                                {% if page_obj.has_previous %}
+                                    <a class="item" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}">上一页</a>
+                                {% else %}
+                                    <a class="item disabled">上一页</a>
+                                {% endif %}
+                                {% for page in page_list %}
+                                    {% if page == page_obj.number %}
+                                        <a class="item active" href="?page={{ page }}{% if q %}&q={{ q }}{% endif %}">{{ page }}</a>
+                                    {% else %}
+                                        <a class="item" href="?page={{ page }}{% if q %}&q={{ q }}{% endif %}">{{ page }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if page_obj.has_next %}
+                                    <a class="item" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}">下一页</a>
+                                {% else %}
+                                    <a class="item disabled">下一页</a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        $(function () {
+            // 删除楼中楼评论
+            $('.delete-reply').click(function () {
+                var id = $(this).data('id')
+                if (confirm('确定要删除这条楼中楼评论吗？')) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '{% url "myadmin:reply_delete" %}',
+                        data: {
+                            'id': id
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.code == 0) {
+                                window.location.reload()
+                            } else {
+                                alert(data.msg)
+                            }
+                        },
+                        error: function (xhr, type) {
+                            alert('删除失败')
+                        }
+                    })
+                }
+            })
+
+            // 搜索楼中楼评论
+            $('#search_button').click(function () {
+                var q = $('#search_input').val()
+                window.location.href = '{% url "myadmin:reply_list" %}?q=' + q
+            })
+
+            // 回车搜索
+            $('#search_input').keypress(function (e) {
+                if (e.which == 13) {
+                    $('#search_button').click()
+                }
+            })
+        })
+    </script>
+{% endblock %}
