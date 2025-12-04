@@ -8,8 +8,9 @@ from ratelimit.decorators import ratelimit
 
 from video.forms import CommentForm
 from comment.forms import DanmakuForm
-from video.models import Video
+
 from comment.models import Comment, Danmaku
+
 
 
 @ratelimit(key='ip', rate='2/m')
@@ -31,6 +32,16 @@ def submit_comment(request,pk):
         new_comment.nickname = request.user.nickname
         new_comment.avatar = request.user.avatar
         new_comment.video = video
+        
+        # 处理父评论
+        parent_comment_id = form.cleaned_data.get('parent_comment')
+        if parent_comment_id:
+            try:
+                parent_comment = Comment.objects.get(id=parent_comment_id)
+                new_comment.parent_comment = parent_comment
+            except Comment.DoesNotExist:
+                pass
+        
         new_comment.save()
 
         data = dict()
@@ -56,9 +67,13 @@ def get_comments(request):
     page_size = request.GET.get('page_size')
     video_id = request.GET.get('video_id')
     video = get_object_or_404(Video, pk=video_id)
+
+    comments = video.comment_set.filter(parent_comment__isnull=True).order_by('-timestamp').all()
+    comment_count = len(comments)
     # 获取顶级评论（没有父评论的评论）
     comments = video.comment_set.filter(parent__isnull=True).order_by('-timestamp').all()
     comment_count = video.comment_set.count()
+
 
     paginator = Paginator(comments, page_size)
     try:
@@ -82,15 +97,64 @@ def get_comments(request):
         "comment_count": comment_count
     })
 
+
+@ratelimit(key='ip', rate='5/m')
+def submit_danmaku(request, pk):
+    """
+    提交弹幕，每分钟限制5条
+=======
 @ratelimit(key='ip', rate='5/m')
 def submit_danmaku(request, pk):
     """
     每分钟限制发5条弹幕
+
     """
     was_limited = getattr(request, 'limited', False)
     if was_limited:
         return JsonResponse({"code": 1, 'msg': '弹幕发送太频繁了，请1分钟后再试'})
     
+
+    if not request.is_ajax():
+        return HttpResponseBadRequest()
+    
+    video = get_object_or_404(Video, pk=pk)
+    content = request.POST.get('content', '')
+    play_time = request.POST.get('play_time', 0)
+    
+    if not content.strip():
+        return JsonResponse({"code": 1, 'msg': '弹幕内容不能为空'})
+    
+    try:
+        play_time = float(play_time)
+    except ValueError:
+        play_time = 0
+    
+    # 创建弹幕
+    danmaku = Danmaku.objects.create(
+        user=request.user,
+        nickname=request.user.nickname,
+        video=video,
+        content=content.strip(),
+        play_time=play_time
+    )
+    
+    return JsonResponse({"code": 0, 'msg': '弹幕发送成功'})
+
+
+def get_danmakus(request):
+    """
+    获取视频的所有弹幕
+    """
+    if not request.is_ajax():
+        return HttpResponseBadRequest()
+    
+    video_id = request.GET.get('video_id')
+    video = get_object_or_404(Video, pk=video_id)
+    
+    danmakus = video.danmaku_set.all().values('id', 'content', 'play_time', 'nickname')
+    
+    return JsonResponse({"code": 0, "danmakus": list(danmakus)})
+=======
     video = get_object_or_404(Video, pk=pk)
     form = DanmakuForm(data=request.POST)
 
@@ -186,4 +250,5 @@ def get_replies(request):
         })
 
     return JsonResponse({"code": 0, "data": data})
+
 
